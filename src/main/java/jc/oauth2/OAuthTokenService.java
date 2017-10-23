@@ -96,7 +96,8 @@ public class OAuthTokenService {
     }
 
     private OAuthRequestData createRequestOAuthRequestBody(String code, String state){
-        return new OAuthRequestData(clientId, clientSecret, code, redirectUri, state);
+        return new OAuthRequestData(clientId, clientSecret, code, redirectUri, state,
+                "access_token", "code");
     }
 
     private CharSequence buildAuthenticationUrl(String state) {
