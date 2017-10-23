@@ -1,7 +1,7 @@
 package jc.github;
 
 import jc.oauth2.OAuthToken;
-import jc.oauth2.OAuthTokenService;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,18 +11,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
-public class GithubService {
+public class DataService {
 
-    @Value("${github.api.uri}")
-    String githubApiUrl;
+    @Value("${data.api.uri}")
+    private String dataApiUrl;
 
-    public String getGithubUserData(OAuthToken oAuthToken){
+    public String getData(OAuthToken oAuthToken){
         HttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(githubApiUrl + "/user");
+        HttpGet httpGet = new HttpGet(dataApiUrl);
         httpGet.addHeader("Authorization", "token " + oAuthToken.token);
         try {
             HttpResponse execute = httpClient.execute(httpGet);

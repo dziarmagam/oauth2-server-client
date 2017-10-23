@@ -1,6 +1,6 @@
 package jc.endpoint;
 
-import jc.github.GithubService;
+import jc.github.DataService;
 import jc.oauth2.OAuthToken;
 import jc.oauth2.OAuthTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,20 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpSession;
 
 @RestController
-public class GithubEndpoint {
+public class DataEndpoint {
 
     @Autowired
-    GithubService githubService;
+    private DataService dataService;
     @Autowired
-    OAuthTokenService oAuthTokenService;
+    private OAuthTokenService oAuthTokenService;
 
-    @RequestMapping("/github")
+    @RequestMapping("/data")
     public ResponseEntity getResource(HttpSession session){
         OAuthToken token = oAuthTokenService.getToken(session.getId());
         if(token == null){
             return ResponseEntity.ok(oAuthTokenService.getAuthenticationPage(session.getId()));
         }else{
-            return ResponseEntity.ok(githubService.getGithubUserData(token));
+            return ResponseEntity.ok(dataService.getData(token));
         }
     }
 
