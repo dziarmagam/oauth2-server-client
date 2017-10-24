@@ -102,7 +102,7 @@ public class OAuthTokenService {
 
     private CharSequence buildAuthenticationUrl(String state) {
         return authenticationUrl +
-                String.format("?client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+                String.format("?client_id=%s&redirect_uri=%s&scope=%s&state=%s&response_type=code",
                         clientId, redirectUri, scope, state);
     }
 }
