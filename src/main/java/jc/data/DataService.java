@@ -1,4 +1,4 @@
-package jc.github;
+package jc.data;
 
 import jc.oauth2.OAuthToken;
 

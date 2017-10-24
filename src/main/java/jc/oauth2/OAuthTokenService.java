@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import jc.utils.BodyType;
+
 import static jc.oauth2.OAuthRequestBodyCreator.*;
 
 @Component
@@ -36,9 +38,12 @@ public class OAuthTokenService {
     private String accessTokenEndpoint;
     @Value("${oauth2.request.body.type}")
     private String oAuth2RequestBodyType;
+    @Value("${oauth2.token.body.type}")
+    private String oAuth2TokenBodyType;
 
     private final Map<String, OAuthToken> sessionTokenMap;
     private OAuthRequestBodyCreator oAuthRequestBodyCreator;
+    private OAuthTokenParser oAuthTokenParser;
 
     public OAuthTokenService() {
 
@@ -48,7 +53,8 @@ public class OAuthTokenService {
     @PostConstruct
     void init(){
         this.oAuthRequestBodyCreator =
-                new OAuthRequestBodyCreator(OAuthRequestBodyType.valueOf(oAuth2RequestBodyType));
+                new OAuthRequestBodyCreator(BodyType.valueOf(oAuth2RequestBodyType));
+        this.oAuthTokenParser = OAuthTokenParser.of(BodyType.valueOf(oAuth2TokenBodyType));
     }
 
     public OAuthToken getToken(String session) {
@@ -78,26 +84,21 @@ public class OAuthTokenService {
 
     private HttpResponse requestAccessToken(OAuthRequestData requestOAuthRequestData) throws IOException {
         HttpPost httpPost = new HttpPost(accessTokenEndpoint);
-        String requestBody = oAuthRequestBodyCreator.createRequestBody(requestOAuthRequestData);
-        httpPost.setEntity(new StringEntity(requestBody, Charset.forName("UTF-8")));
-        httpPost.addHeader("Content-Type", "application/json");
+        OAuth2RequestBody requestBody = oAuthRequestBodyCreator.createRequestBody(requestOAuthRequestData);
+        httpPost.setEntity(new StringEntity(requestBody.body, Charset.forName("UTF-8")));
+        httpPost.addHeader("Content-Type", requestBody.contentType);
         HttpClient httpClient = HttpClients.createDefault();
         return httpClient.execute(httpPost);
     }
 
     private void extractToken(String responseContent, String state){
-        String[] split = responseContent.split("&");
-        for (String param : split) {
-            String[] keyValue = param.split("=");
-            if("access_token".equals(keyValue[0])){
-                sessionTokenMap.put(state, new OAuthToken(keyValue[1]));
-            }
-        }
+        OAuthToken token = oAuthTokenParser.parse(responseContent);
+        sessionTokenMap.put(state, token);
     }
 
     private OAuthRequestData createRequestOAuthRequestBody(String code, String state){
         return new OAuthRequestData(clientId, clientSecret, code, redirectUri, state,
-                "access_token", "code");
+                "access_token", "authorization_code");
     }
 
     private CharSequence buildAuthenticationUrl(String state) {

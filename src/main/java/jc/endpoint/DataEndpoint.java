@@ -1,6 +1,6 @@
 package jc.endpoint;
 
-import jc.github.DataService;
+import jc.data.DataService;
 import jc.oauth2.OAuthToken;
 import jc.oauth2.OAuthTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
