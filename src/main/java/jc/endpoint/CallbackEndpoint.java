@@ -22,7 +22,7 @@ public class CallbackEndpoint {
     @RequestMapping
     public ResponseEntity oauthCallback(@RequestParam("code") String code, @RequestParam("state") String state) throws IOException {
 
-            oAuthTokenService.processAuthoricationCode(code, state);
+            oAuthTokenService.processAuthorizationCode(code, state);
             //send redirect
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "/data");

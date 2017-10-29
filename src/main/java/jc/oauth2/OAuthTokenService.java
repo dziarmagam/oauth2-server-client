@@ -61,7 +61,7 @@ public class OAuthTokenService {
         return sessionTokenMap.get(session);
     }
 
-    public void processAuthoricationCode(String code, String state) throws IOException {
+    public void processAuthorizationCode(String code, String state) throws IOException {
         OAuthRequestData requestOAuthRequestData = createRequestOAuthRequestBody(code, state);
         //Get access token
         HttpResponse execute = requestAccessToken(requestOAuthRequestData);
@@ -76,7 +76,7 @@ public class OAuthTokenService {
         try {
             return IOUtils.toString(resourceAsStream,
                     Charset.forName("UTF-8")).replace("{authenticationUrl}",
-                    buildAuthenticationUrl(state));
+                    buildAuthorizationUrl(state));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -101,7 +101,7 @@ public class OAuthTokenService {
                 "access_token", "authorization_code");
     }
 
-    private CharSequence buildAuthenticationUrl(String state) {
+    private CharSequence buildAuthorizationUrl(String state) {
         return authenticationUrl +
                 String.format("?client_id=%s&redirect_uri=%s&scope=%s&state=%s&response_type=code",
                         clientId, redirectUri, scope, state);
